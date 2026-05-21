@@ -180,7 +180,8 @@ def load_data():
         # Hapus karakter BOM jika ada
         if content.startswith('\ufeff'):
             content = content[1:]
-        return pd.read_csv(StringIO(content), on_bad_lines='skip')
+        sep = ';' if ';' in content.split('\n')[0] else ','
+        return pd.read_csv(StringIO(content), sep=sep, on_bad_lines='skip')
 
     tour = fetch_csv(tour_url)
     rating = fetch_csv(rating_url)
