@@ -166,13 +166,26 @@ section[data-testid="stSidebar"] * {
 # ================================
 @st.cache_data
 def load_data():
+    import requests
+    from io import StringIO
+
     tour_url = "https://raw.githubusercontent.com/AwalDinz/rekomendasi-wisata-ml/main/dataset/tour.csv"
     rating_url = "https://raw.githubusercontent.com/AwalDinz/rekomendasi-wisata-ml/main/dataset/tour_rating.csv"
     user_url = "https://raw.githubusercontent.com/AwalDinz/rekomendasi-wisata-ml/main/dataset/user.csv"
 
-    tour = pd.read_csv(tour_url)
-    rating = pd.read_csv(rating_url)
-    user = pd.read_csv(user_url)
+    def fetch_csv(url):
+        response = requests.get(url)
+        response.encoding = 'utf-8'
+        content = response.text
+        # Hapus karakter BOM jika ada
+        if content.startswith('\ufeff'):
+            content = content[1:]
+        return pd.read_csv(StringIO(content), on_bad_lines='skip')
+
+    tour = fetch_csv(tour_url)
+    rating = fetch_csv(rating_url)
+    user = fetch_csv(user_url)
+
     return tour, rating, user
 
 tour, rating, user = load_data()
